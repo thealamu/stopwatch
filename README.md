@@ -1,4 +1,6 @@
-# stopwatch
+# Stopwatch
+
+![GitHub Logo](/public/images/screenshot.jpg)
 
 ## Project setup
 ```shell
