@@ -1,21 +1,75 @@
 <template>
   <div id="app">
-    <h1 id="time">00:00</h1>
+    <h1 id="time">{{ curTime.toString().toHHMMSS() }}</h1>
     <div id="controls">
-      <button id="restart">Restart</button>
-      <button id="start">Start</button>
-      <button id="stop">Stop</button>
+      <button @click="restart" id="restart">Restart</button>
+      <button @click="start" id="start">Start</button>
+      <button @click="stop" id="stop">Stop</button>
     </div>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'App',
-  data: function() {
+String.prototype.toHHMMSS = function() {
+  var sec_num = parseInt(this, 10); // don't forget the second param
+  var hours = Math.floor(sec_num / 3600);
+  var minutes = Math.floor((sec_num - hours * 3600) / 60);
+  var seconds = sec_num - hours * 3600 - minutes * 60;
 
+  if (hours < 10) {
+    hours = "0" + hours;
   }
-}
+  if (minutes < 10) {
+    minutes = "0" + minutes;
+  }
+  if (seconds < 10) {
+    seconds = "0" + seconds;
+  }
+  return hours + ":" + minutes + ":" + seconds;
+};
+
+var intvl = "";
+
+export default {
+  name: "App",
+  data: function() {
+    return {
+      curTime: 0,
+      startTime: 0,
+      hasStarted: false,
+
+      start: function() {
+        if (this.hasStarted) {
+          return;
+        }
+        this.startTime = new Date().getTime();
+        this.hasStarted = true;
+        console.log("Starting");
+        intvl = setInterval(this.doCount, 1000, this);
+      }.bind(this),
+
+      restart: function() {
+        console.log("Restarting");
+        this.stop();
+        this.start();
+      }.bind(this),
+
+      stop: function() {
+        console.log("Stopping");
+        clearInterval(intvl);
+        this.curTime = 0;
+        this.startTime = 0;
+      }.bind(this)
+    };
+  },
+  methods: {
+    doCount: function(instance) {
+      var now = new Date().getTime();
+      instance.curTime = (now - instance.startTime) / 1000;
+      console.log(instance.curTime);
+    }
+  }
+};
 </script>
 
 <style>
@@ -42,7 +96,7 @@ export default {
   width: 80px;
   border-radius: 4px;
   padding: 8px;
-  color:white
+  color: white;
 }
 
 #controls #restart {
@@ -56,7 +110,6 @@ export default {
   background-color: rgba(32, 32, 94, 0.63);
   transition: 0.1s ease-out;
 }
-
 
 #controls #start {
   background-color: rgb(61, 145, 99);
@@ -81,5 +134,4 @@ export default {
   background-color: rgb(129, 39, 43, 0.63);
   transition: 0.1s ease-out;
 }
-
 </style>
